@@ -1,0 +1,52 @@
+;Clay Chapman
+;Assignment 9
+
+;Problem 1
+
+;sn-list recur method
+(define snlist-recur 
+  (lambda (base lst-pred empty-pred pred)
+  (letrec ([helper
+             (lambda (lst)
+               (cond
+                 [(null? lst) base]
+                 [(null? (car lst)) (lst-pred (empty-pred (helper (car lst))) (helper (cdr lst)))]
+                 [(not (list? (car lst)))  (lst-pred (pred (car lst)) (helper (cdr lst)))]
+                 [else (lst-pred (helper (car lst)) (helper (cdr lst)))]
+                 ))])
+    
+      helper)))
+
+
+
+
+(define sn-list-sum 
+  (snlist-recur 0 + (lambda (x) 0) (lambda (y) y)))
+
+(define sn-list-map 
+  (lambda (pred lst)
+    ((snlist-recur '() cons (lambda (x) '()) pred) lst)))
+
+(define sn-list-paren-count
+  (snlist-recur 2 + (lambda (x) 2) (lambda (y) 0)))
+
+(define sn-list-reverse
+  (snlist-recur '() (lambda (x y) (append y (list x))) (lambda (x) '()) (lambda (y) y)))
+
+(define sn-list-occur
+  (lambda (s lst)
+  ((snlist-recur 0 + (lambda (x) 0) (lambda (y) (if (equal? s y) 1 0))) lst)))
+
+(define sn-list-depth
+  (snlist-recur 1 (lambda (x y) (max (+ 1 x) y)) (lambda (x) 1) (lambda (x) 0)))
+
+;Problem 2
+(define bt-recur
+  (lambda (base pred)
+    (letrec ([helper
+               (lambda (lst)
+                 (cond
+                   [(or (null? lst) (null? (car lst))) base]
+                   [else (pred (car lst) (helper (cadr lst)) (helper (caddr lst)))]
+                   ))])
+      helper)))
